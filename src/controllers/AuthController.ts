@@ -67,7 +67,7 @@ class AuthController {
                 return;
             }
             const user = await AuthService.register({ email, password, role });
-            
+
             if (user) {
                 sendResponse(res, { success: true, message: 'User created successfully', data: {}, code: 200 }, 201);
                 logger.info(`User ${email} created successfully`);
@@ -143,11 +143,53 @@ class AuthController {
                 logger.error('Email and password are required');
                 return;
             }
-            
+
             const user = await AuthService.login({ email, password });
             sendResponse(res, { success: true, message: 'User logged in successfully', data: user, code: 200 }, 200);
             logger.info(`User ${email} logged in successfully`);
             return;
+        } catch (error) {
+            if (error instanceof Error) {
+                sendError(res, error.message, 400);
+                logger.error(`Error logging in user: ${error.message}`);
+                return
+            } else {
+                sendError(res, 'An unknown error occurred', 400);
+                logger.error(`Error Logging in user: An unknown error occurred`);
+                return
+            }
+        }
+    }
+
+    // Forgot Password
+    async forgetPassword(req: Request, res: Response) {
+        const { email } = req.body
+
+        try {
+            const resetToken = await AuthService.forgetPassword(email);
+            sendResponse(res, { success: true, message: 'Password reset token sent to your email', data: resetToken, code: 200 }, 200);
+            return
+        } catch (error) {
+            if (error instanceof Error) {
+                sendError(res, error.message, 400);
+                logger.error(`Error logging in user: ${error.message}`);
+                return
+            } else {
+                sendError(res, 'An unknown error occurred', 400);
+                logger.error(`Error Logging in user: An unknown error occurred`);
+                return
+            }
+        }
+    }
+
+    // Reset Password
+    async resetPassword(req: Request, res: Response) {
+        const { resetToken, password } = req.body;
+
+        try {
+            const resetPassword = await AuthService.resetPassword(resetToken, password);
+            sendResponse(res, { success: true, message: 'Password reset successfully', data: resetPassword, code: 200 }, 200);
+            return
         } catch (error) {
             if (error instanceof Error) {
                 sendError(res, error.message, 400);
