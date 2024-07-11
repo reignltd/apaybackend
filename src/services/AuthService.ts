@@ -1,7 +1,10 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { hashPassword, comparePassword } from "../utils/authhasing";
+import jwt from 'jsonwebtoken'
 
 const prisma = new PrismaClient();
+
+const secretKey = process.env.SECRET_KEY || 'secret';
 
 interface AddUserParams {
     email: string;
@@ -46,8 +49,15 @@ class AuthService {
         if (!passwordMatch) {
             throw new Error('Incorrect password');
         }
+
+        // Access token
+        const accessToken = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
         
-        return user;
+        const loginData = {
+            accessToken,
+            role: user.role
+        }
+        return loginData;
     }
 
     // Check if the email is taken
