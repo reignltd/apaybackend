@@ -2,6 +2,7 @@ import express from 'express';
 import logger from './logger';
 import setupSwagger from './utils/swagger';
 import authRoute from './routes/AuthRoutes';
+import verificationRoute from './routes/VerificationRoutes'
 import * as bodyParser from 'body-parser';
 
 const app = express();
@@ -15,6 +16,7 @@ setupSwagger(app);
 
 // Authentication routes
 app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/verification', verificationRoute);
 
 // Define a simple route
 app.get('/', (req, res) => {
