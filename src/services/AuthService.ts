@@ -88,7 +88,7 @@ class AuthService {
     // Set new password
     async resetPassword(resetToken: string, password: string) {
         try {
-            const decodedToken: any = jwt.verify(resetToken, secretKey);
+            const decodedToken: any = await jwt.verify(resetToken, secretKey);
 
             const user = await prisma.user.findUnique({
                 where: { email: decodedToken.email },
