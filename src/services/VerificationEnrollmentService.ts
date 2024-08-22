@@ -33,7 +33,7 @@ class VerificationEnrollmentService {
     }
 
     // Generalized method to add verification data
-    async addVerification(userId: string, verificationBankId: string, data: object): Promise<boolean> {
+    async addVerification(userId: string, verificationBankId: string, data: any): Promise<boolean> {
         try {
             await prisma.verificationEnrollment.create({
                 data: {
@@ -42,19 +42,29 @@ class VerificationEnrollmentService {
                     data,
                 },
             });
-
+    
             return true;
-        } catch (e) {
-            if (e.code === 'P2002') {
-                logger.warn(`${verificationBankId} already exists`);
-                return false;
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                // Handle known error type
+                if ((e as any).code === 'P2002') {
+                    logger.warn(`${verificationBankId} already exists`);
+                    return false;
+                }
+                // Log and rethrow any other errors
+                logger.error(`Error adding verification: ${e.message}`);
+                throw e;
+            } else {
+                // Handle unexpected error types
+                logger.error('An unexpected error occurred');
+                throw new Error('An unexpected error occurred');
             }
-            throw e;
         }
     }
+    
 
     // Add bvn
-    async addBVN(userId: string, verificationBankId: string, data: object): Promise<boolean> {
+    async addBVN(userId: string, verificationBankId: string, data: any): Promise<boolean> {
         return this.addVerification(userId, verificationBankId, data);
     }
 
