@@ -33,6 +33,36 @@ class VerificationController {
             return
         }
     }
+
+    // Get NIN Advance
+    async getNINAdvanceResponse(req: Request, res: Response) {
+        try {
+            const { nin } = req.body;
+            const response = await VerificationService.getNINAdvanceResponse(Number(nin));
+            sendResponse(res, { success: true, message: 'Get nin advance response successfully', data: response, code: 200 }, 200);
+            logger.info('Get nin advance response successfully');
+            return
+        } catch (e) {
+            sendError(res,'Unable to retrieve NIN data', 400);
+            logger.error(`Get nin advance response failed: `);
+            return
+        }
+    }
+
+    // Get Phone Number
+    async getPhoneNumberAdvanceResponse(req: Request, res: Response) {
+        try {
+            const { phoneNumber } = req.body;
+            const response = await VerificationService.getPhoneNumberAdvanceResponse(Number(phoneNumber));
+            sendResponse(res, { success: true, message: 'Get phone number advance response successfully', data: response, code: 200 }, 200);
+            logger.info('Get phone number advance response successfully');
+            return
+        } catch (e) {
+            sendError(res,'Unable to retrieve phone number data', 400);
+            logger.error(`Get phone number advance response failed: `);
+            return
+        }
+    }
 }
 
 export default new VerificationController()
