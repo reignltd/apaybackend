@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 const prisma = new PrismaClient();
 
-const secretKey = process.env.SECRET_KEY || 'secret';
+const secretKey = process.env.ACCESS_TOKEN_SECRET || 'amnispaybackend';
 
 interface AddUserParams {
     email: string;

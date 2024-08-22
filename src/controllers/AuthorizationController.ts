@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { UserStatus } from "@prisma/client";
 import { sendResponse, sendError } from "../utils/response";
 import logger from "../logger";
@@ -11,21 +10,26 @@ class AuthorizationController {
 
     // Helper function to check if user details match with BVN data
     private async verifyBVNData(theUser: any, bvnData: any): Promise<boolean> {
+        // Check if user details match with BVN data
         const isFirstname = theUser?.firstName.toLocaleLowerCase() === bvnData?.first_name?.toLocaleLowerCase();
         const isLastname = theUser?.lastName.toLocaleLowerCase() === bvnData?.last_name?.toLocaleLowerCase();
         const isGender = theUser?.gender?.toLocaleLowerCase() === bvnData?.gender?.toLocaleLowerCase();
 
-        return isFirstname && isLastname && isGender;
+        const checker = isFirstname && isLastname && isGender;
+
+        console.log('NAME CHECKER : ', checker, isFirstname, isLastname, isGender)
+
+        return checker;
     }
 
     // BVN Verification
-    async checkBVN(req: Request, res: Response) {
+    async checkBVN(req: any, res: any) {
         const { bvn } = req.body;
-        const userId = req.user.id;
+        const userId = req.decoded.userId;
 
         try {
             // Check if BVN exists in the database
-            const isBVN = await AuthorizationService.isBVN(bvn);
+            const isBVN = await AuthorizationService.isBVN(String(bvn));
             const theUser = await AuthService.findUserInfoByUserId(userId);
 
             // If BVN is found in the database
@@ -34,7 +38,7 @@ class AuthorizationController {
 
                 if (isVerified) {
                     // Add to verification enrollment
-                    const addBvnEnrollment = await VerificationEnrollmentService.addBVN(userId, bvn, isBVN.data);
+                    const addBvnEnrollment = await VerificationEnrollmentService.addBVN(userId, isBVN.id, isBVN?.data);
 
                     if (addBvnEnrollment) {
                         sendResponse(res, { success: true, message: 'BVN Verified', data: null, code: 200 }, 200);
@@ -59,14 +63,14 @@ class AuthorizationController {
                     const bvnData = fetchBVN?.entity;
 
                     // Insert into verification bank
-                    const addBVN = await AuthorizationService.addBVN(bvn, bvnData);
+                    const addBVN = await AuthorizationService.addBVN(String(bvn), bvnData);
 
                     if (addBVN) {
                         const isVerified = await this.verifyBVNData(theUser, bvnData);
 
                         if (isVerified) {
                             // Add to verification enrollment
-                            const addBvnEnrollment = await VerificationEnrollmentService.addBVN(userId, bvn, bvnData);
+                            const addBvnEnrollment = await VerificationEnrollmentService.addBVN(userId, addBVN.id, bvnData);
 
                             if (addBvnEnrollment) {
                                 sendResponse(res, { success: true, message: 'BVN Verified', data: null, code: 200 }, 200);
@@ -83,10 +87,19 @@ class AuthorizationController {
                                 return;
                             }
                         }
+                    } else {
+                        sendError(res, 'Internal Server Error', 500);
+                        logger.error('Error in BVN Verification:', 'Internal Server Error');
+                        return;
                     }
+                } else {
+                    sendResponse(res, { success: true, message: 'BVN Not Found', data: null, code: 200 }, 200);
+                    logger.info('BVN Not Found');
+                    return;
                 }
             }
         } catch (error) {
+            console.log('Error in BVN Verification @ last catch:', error);
             logger.error('Error in BVN Verification:', error);
             sendError(res, 'Internal Server Error', 500);
         }

@@ -1,38 +1,44 @@
-import { PrismaClient, VerificationType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { VerificationType, VerificationBank } from "@prisma/client";
 import logger from "../logger";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 class AuthorizationService {
 
     // Generalized method to check if verification data exists
-    async isVerification(type: VerificationType, number: string) {
-        const check = await prisma.verificationBank.findFirst({
-            where: {
-                number,
-                type,
-            },
-        });
+    async isVerification(type: VerificationType, number: string): Promise<VerificationBank | null> {
+        try {
+            const check = await prisma.verificationBank.findFirst({
+                where: {
+                    number,
+                    type,
+                },
+            });
 
-        return check || null;
+            return check ?? null;
+        } catch (error) {
+            logger.error(`Error fetching verification data for ${type}: ${error}`);
+            throw error;
+        }
     }
 
-    async isBVN(bvn: string) {
+    async isBVN(bvn: string): Promise<VerificationBank | null> {
         return this.isVerification(VerificationType.BVN, bvn);
     }
 
-    async isNIN(nin: string) {
+    async isNIN(nin: string): Promise<VerificationBank | null> {
         return this.isVerification(VerificationType.NIN, nin);
     }
 
-    async isPhoneNumber(phoneNumber: string) {
+    async isPhoneNumber(phoneNumber: string): Promise<VerificationBank | null> {
         return this.isVerification(VerificationType.PHONENUMBER, phoneNumber);
     }
 
     // Generalized method to add verification data
-    async addVerification(type: VerificationType, number: string, data: object): Promise<boolean> {
+    async addVerification(type: VerificationType, number: string, data: Record<string, any>): Promise<VerificationBank | null> {
         try {
-            await prisma.verificationBank.create({
+            const addVerification = await prisma.verificationBank.create({
                 data: {
                     number,
                     type,
@@ -40,25 +46,26 @@ class AuthorizationService {
                 },
             });
 
-            return true;
-        } catch (e) {
+            return addVerification;
+        } catch (e: any) {
             if (e.code === 'P2002') {
-                logger.warn(`${type} already exists`);
-                return false;
+                logger.warn(`${type} already exists in the database.`);
+                return null;
             }
+            logger.error(`Error adding verification data for ${type}: ${e}`);
             throw e;
         }
     }
 
-    async addBVN(bvn: string, data: object): Promise<boolean> {
+    async addBVN(bvn: string, data: Record<string, any>): Promise<VerificationBank | null> {
         return this.addVerification(VerificationType.BVN, bvn, data);
     }
 
-    async addNIN(nin: string, data: object): Promise<boolean> {
+    async addNIN(nin: string, data: Record<string, any>): Promise<VerificationBank | null> {
         return this.addVerification(VerificationType.NIN, nin, data);
     }
 
-    async addPhoneNumber(phoneNumber: string, data: object): Promise<boolean> {
+    async addPhoneNumber(phoneNumber: string, data: Record<string, any>): Promise<VerificationBank | null> {
         return this.addVerification(VerificationType.PHONENUMBER, phoneNumber, data);
     }
 }
