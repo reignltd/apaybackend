@@ -14,18 +14,47 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  password         String?
-  role             Role      @default(USER)
-  resetToken       String?
-  resetTokenExpiry DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                     String                   @id @default(uuid())
+  email                  String                   @unique
+  password               String
+  role                   Role                     @default(USER)
+  resetToken             String?
+  resetTokenExpiry       DateTime?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  VerificationEnrollment VerificationEnrollment[]
+}
+
+// Create model for verification bank to have id, type, number, data
+model VerificationBank {
+  id                     String                   @id @default(uuid())
+  type                   VerificationType
+  number                 String
+  data                   Json
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  VerificationEnrollment VerificationEnrollment[]
+}
+
+model VerificationEnrollment {
+  id                 String           @id @default(uuid())
+  user               User             @relation(fields: [userId], references: [id])
+  userId             String
+  data               Json
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  verificationBank   VerificationBank @relation(fields: [verificationBankId], references: [id])
+  verificationBankId String
 }
 
 enum Role {
   USER
   ADMIN
   SUPERADMIN
+}
+
+enum VerificationType {
+  BVN
+  NIN
+  PHONENUMBER
 }
