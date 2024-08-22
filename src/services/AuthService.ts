@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient, Role, UserStatus } from "@prisma/client";
 import { hashPassword, comparePassword } from "../utils/authhasing";
 import jwt from 'jsonwebtoken'
 
@@ -109,6 +109,22 @@ class AuthService {
         } catch (error) {
             throw new Error('Invalid or expired reset token');
         }
+    }
+
+    // Find a userinfo by id
+    async findUserInfoByUserId(id: string) {
+        const user = await prisma.userInfo.findUnique({ where: { userId: id } });
+        return user;
+    }
+
+    // Update user status
+    async updateUserStatus(id: string, status: UserStatus) {
+        const user = await prisma.user.update({
+            where: { id },
+            data: { status },
+        });
+        
+        return user;
     }
 }
 
