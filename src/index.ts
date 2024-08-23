@@ -4,6 +4,7 @@ import setupSwagger from './utils/swagger';
 import authRoute from './routes/AuthRoutes';
 import verificationRoute from './routes/VerificationRoutes'
 import kycRoute from './routes/KycRoutes'
+import profileRouter from './routes/ProfileRoutes';
 import * as bodyParser from 'body-parser';
 
 const app = express();
@@ -19,6 +20,7 @@ setupSwagger(app);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/verification', verificationRoute);
 app.use('/api/v1/kyc', kycRoute);
+app.use('/api/v1/profile', profileRouter);
 
 // Define a simple route
 app.get('/', (req, res) => {
