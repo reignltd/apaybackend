@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { sendResponse, sendError } from '../utils/response';
 import AuthService from '../services/AuthService';
 import logger from '../logger';
+import VerificationEnrollmentService from '../services/VerificationEnrollmentService';
+import { VerificationType } from '@prisma/client';
 
 /**
  * @swagger
@@ -145,7 +147,17 @@ class AuthController {
             }
 
             const user = await AuthService.login({ email, password });
-            sendResponse(res, { success: true, message: 'User logged in successfully', data: user, code: 200 }, 200);
+            const isBvn = await VerificationEnrollmentService.getVerificationEnrollment(user.id, VerificationType.BVN);
+            const isNin = await VerificationEnrollmentService.getVerificationEnrollment(user.id, VerificationType.NIN);
+            const isPhone = await VerificationEnrollmentService.getVerificationEnrollment(user.id, VerificationType.PHONENUMBER);
+
+            sendResponse(res, {
+                success: true,
+                message: 'User logged in successfully',
+                data: { ...user, isBvn, isNin, isPhone },
+                code: 200
+            }, 200);
+
             logger.info(`User ${email} logged in successfully`);
             return;
         } catch (error) {

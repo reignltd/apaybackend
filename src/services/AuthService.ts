@@ -55,7 +55,8 @@ class AuthService {
 
         const loginData = {
             accessToken,
-            role: user.role
+            role: user.role,
+            id: user.id
         }
         return loginData;
     }
