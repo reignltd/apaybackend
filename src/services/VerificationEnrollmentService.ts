@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, VerificationType } from "@prisma/client";
 import logger from "../logger";
 
 const prisma = new PrismaClient()
@@ -79,7 +79,23 @@ class VerificationEnrollmentService {
         return this.addVerification(userId, verificationBankId, data);
     }
 
+    // Get verification enrollment based on userId and number in the verification bank
+    async getVerificationEnrollment(userId: string, verificationType: VerificationType) {
+        const check =  await prisma.verificationEnrollment.findFirst({
+            where: {
+                userId,
+                verificationBank: {
+                    type: verificationType
+                }
+            }
+        })
 
+        if (check) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 export default new VerificationEnrollmentService()
