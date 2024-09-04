@@ -91,7 +91,7 @@ class VerificationEnrollmentService {
         })
 
         if (check) {
-            return true
+            return check
         } else {
             return false
         }

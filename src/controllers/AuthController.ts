@@ -154,7 +154,7 @@ class AuthController {
             sendResponse(res, {
                 success: true,
                 message: 'User logged in successfully',
-                data: { ...user, isBvn, isNin, isPhone },
+                data: { ...user, isBvn: isBvn ? true : false, isNin: isNin ? true : false, isPhone: isPhone ? true : false },
                 code: 200
             }, 200);
 

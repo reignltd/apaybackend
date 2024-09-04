@@ -51,7 +51,7 @@ class AuthService {
         }
 
         // Access token
-        const accessToken = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ userId: user.id, role: user.role, email: user.email }, secretKey, { expiresIn: '1h' });
 
         const loginData = {
             accessToken,
