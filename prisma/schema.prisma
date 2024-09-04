@@ -25,6 +25,7 @@ model User {
   status                 UserStatus               @default(ACTIVE)
   VerificationEnrollment VerificationEnrollment[]
   UserInfo               UserInfo?
+  VirtualAccount         VirtualAccount[]
 }
 
 // Create model for user info
@@ -62,6 +63,19 @@ model VerificationEnrollment {
   verificationBankId String
 }
 
+model VirtualAccount {
+  id        String               @id @default(uuid())
+  user      User                 @relation(fields: [userId], references: [id])
+  userId    String
+  number    String
+  balance   Float                @default(0)
+  status    VirtualAccountStatus @default(ACTIVE)
+  bankName  String
+  data      Json
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
 enum Role {
   USER
   ADMIN
@@ -78,4 +92,9 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   BLOCKED
+}
+
+enum VirtualAccountStatus {
+  ACTIVE
+  INACTIVE
 }
