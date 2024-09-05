@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 interface WalletTypeParams {
     name: string
     percentage: number
+    duration: number
 }
 
 class WalletTypeService {
@@ -26,7 +27,8 @@ class WalletTypeService {
         const walletType = await prisma.walletType.create({
             data: {
                 name: payload.name,
-                percentage: payload.percentage
+                percentage: payload.percentage,
+                duration: payload.duration
             }
         });
         return walletType;
@@ -47,7 +49,8 @@ class WalletTypeService {
             where: { id },
             data: {
                 name: payload.name,
-                percentage: payload.percentage
+                percentage: payload.percentage,
+                duration: payload.duration
             }
         });
        

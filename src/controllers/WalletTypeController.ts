@@ -18,6 +18,37 @@ class WalletTypeController {
             return
         }
     }
+
+    // Post wallet type
+    async createWalletType(req: any, res: any) {
+        try {
+            const {walletName, walletPercentage, walletDuration} = req.body
+
+            if (!walletName ) {
+                return sendError(res, 'Bad request', 400);
+            }
+
+            const payload = {
+                name: walletName,
+                percentage : walletPercentage,
+                duration : walletDuration
+            }
+            
+            const walletType = await WalletTypeService.createWalletType(payload);
+
+            if (!walletType) {
+                return sendError(res, 'Unable to create wallet type', 400);
+            }
+
+            sendResponse(res, { success: true, message: 'Create wallet type successfully', data: walletType, code: 200 }, 200);
+            logger.info('Create wallet type successfully');
+            return
+        } catch (e) {
+            sendError(res, 'Error', 400);
+            logger.error(`Create wallet type failed: `);
+            return
+        }
+    }
 }
 
 export default new WalletTypeController()
