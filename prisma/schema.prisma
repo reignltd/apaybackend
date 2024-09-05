@@ -76,6 +76,12 @@ model VirtualAccount {
   updatedAt DateTime             @updatedAt
 }
 
+model WalletType {
+  id         String @id @default(uuid())
+  name       String @unique
+  percentage Float
+}
+
 enum Role {
   USER
   ADMIN
