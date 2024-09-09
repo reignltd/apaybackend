@@ -9,6 +9,7 @@ import virtualAccountRouter from './routes/VirtualAccountRoutes';
 import walletRouter from './routes/WalletTypeRouters';
 import beneficiaryRouter from './routes/BeneficiaryRoutes';
 import billsRouter from './routes/BillsRoutes';
+import transferRouter from './routes/TransferRoutes';
 import * as bodyParser from 'body-parser';
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/v1/virtual-account', virtualAccountRouter);
 app.use('/api/v1/wallet', walletRouter);
 app.use('/api/v1/beneficiary', beneficiaryRouter);
 app.use('/api/v1/bills', billsRouter);
+app.use('/api/v1/transfer', transferRouter);
 
 // Define a simple route
 app.get('/', (req, res) => {
