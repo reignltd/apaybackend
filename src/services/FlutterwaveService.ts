@@ -23,6 +23,13 @@ interface AccountResolveParams {
     bank_code: string
 }
 
+interface BillsPaymentParams {
+    item_code: string
+    biller_code: string
+    amount: number,
+    customer: string
+}
+
 class FlutterwaveService {
 
     // create virtual account
@@ -77,11 +84,16 @@ class FlutterwaveService {
                     country: 'NG',
                 }
             }).then((res) => res.data)
-              .catch((err) => {
-                  console.error('Error Response:', err.response ? err.response.data : err.message);
-                  return err;
-              });
-            return response;
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                });
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
         } catch (e) {
             console.log('Error: ', e);
             return e;
@@ -96,11 +108,16 @@ class FlutterwaveService {
                     country: 'NG',
                 }
             }).then((res) => res.data)
-              .catch((err) => {
-                  console.error('Error Response:', err.response ? err.response.data : err.message);
-                  return err;
-              });
-            return response;
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                });
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
         } catch (e) {
             console.log('Error: ', e);
             return e;
@@ -115,11 +132,16 @@ class FlutterwaveService {
                     country: 'NG',
                 }
             }).then((res) => res.data)
-              .catch((err) => {
-                  console.error('Error Response:', err.response ? err.response.data : err.message);
-                  return err;
-              });
-            return response;
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                });
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
         } catch (e) {
             console.log('Error: ', e);
             return e;
@@ -130,23 +152,53 @@ class FlutterwaveService {
     async validateBill(billerCode: string, customer: string, itemCode: string) {
         try {
             const response = await axiosInstance.get(`/bill-items/${itemCode}/validate`, {
-                params : {
+                params: {
                     country: 'NG',
                     customer,
                     code: billerCode
                 }
             }).then((res) => res.data)
-              .catch((err) => {
-                  console.error('Error Response:', err.response ? err.response.data : err.message);
-                  return err;
-              });
-            return response;
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                });
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
         } catch (e) {
             console.log('Error: ', e);
             return e;
         }
     }
-    
+
+    // async make bills payment
+    async makeBillPayment(data: BillsPaymentParams) {
+        try {
+            const body = {
+                country: 'NG',
+                customer_id: data.customer,
+                amount: data.amount,
+            }
+            const response = await axiosInstance.post(`/billers/${data.biller_code}/items/${data.item_code}/payment`, body).then((res) => res.data)
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                });
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
+        } catch (e) {
+            console.log('Error: ', e);
+            return e;
+        }
+    }
+
 }
 
 export default new FlutterwaveService()
