@@ -2,6 +2,7 @@
 import { sendResponse, sendError } from "../utils/response";
 import logger from "../logger";
 import BeneficiaryService from "../services/BeneficiaryService";
+import FlutterwaveService from "../services/FlutterwaveService";
 
 class BeneficiaryController {
 
@@ -45,7 +46,7 @@ class BeneficiaryController {
         try {
             const userId = req.decoded.userId
             const beneficiary = await BeneficiaryService.getBeneficiaryByUserId(userId);
-            
+
             sendResponse(res, { success: true, message: 'Get beneficiary successfully', data: beneficiary, code: 200 }, 200);
             logger.info('Get beneficiary successfully');
             return
@@ -73,6 +74,35 @@ class BeneficiaryController {
         } catch (e) {
             sendError(res, 'Error', 400);
             logger.error(`Delete beneficiary failed: `);
+            return
+        }
+    }
+
+    // Get banks in Nigeria
+    async getBanks(req: any, res: any) {
+        try {
+            const banks = await FlutterwaveService.getBanks();
+            sendResponse(res, { success: true, message: 'Get banks successfully', data: banks, code: 200 }, 200);
+            logger.info('Get banks successfully');
+            return
+        } catch (e) {
+            sendError(res, 'Error', 400);
+            logger.error(`Get banks failed: `);
+            return
+        }
+    }
+
+    // Post account resolve
+    async accountResolve(req: any, res: any) {
+        try {
+            const { account_number, bank_code } = req.body
+            const account = await FlutterwaveService.accountResolve({ account_number, bank_code });
+            sendResponse(res, { success: true, message: 'Get account successfully', data: account, code: 200 }, 200);
+            logger.info('Get account successfully');
+            return
+        } catch (e) {
+            sendError(res, 'Error', 400);
+            logger.error(`Get account failed: `);
             return
         }
     }
