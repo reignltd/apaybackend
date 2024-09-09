@@ -30,6 +30,10 @@ model User {
   WalletTransaction         WalletTransaction[]
   VirtualAccountTransaction VirtualAccountTransaction[]
   Beneficiary               Beneficiary[]
+  BillsTransaction          BillsTransaction[]
+  TransferTransaction       TransferTransaction[]
+  Notification              Notification[]
+  TransactionPin            TransactionPin[]
 }
 
 // Create model for user info
@@ -139,6 +143,43 @@ model Beneficiary {
   bankCode  String
   user      User     @relation(fields: [userId], references: [id])
   userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BillsTransaction {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TransferTransaction {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TransactionPin {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  pin       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
