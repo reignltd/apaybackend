@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { Router } from "express";
 import WalletTypeController from "../controllers/WalletTypeController";
 import WalletController from "../controllers/WalletController";
