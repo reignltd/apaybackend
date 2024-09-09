@@ -68,6 +68,85 @@ class FlutterwaveService {
             return e
         }
     }
+
+    // async get bills categories with params
+    async getBillsCategories() {
+        try {
+            const response = await axiosInstance.get(`/top-bill-categories`, {
+                params: {
+                    country: 'NG',
+                }
+            }).then((res) => res.data)
+              .catch((err) => {
+                  console.error('Error Response:', err.response ? err.response.data : err.message);
+                  return err;
+              });
+            return response;
+        } catch (e) {
+            console.log('Error: ', e);
+            return e;
+        }
+    }
+
+    // async get bill's items
+    async getBillItems(category: string) {
+        try {
+            const response = await axiosInstance.get(`/bills/${category}/billers`, {
+                params: {
+                    country: 'NG',
+                }
+            }).then((res) => res.data)
+              .catch((err) => {
+                  console.error('Error Response:', err.response ? err.response.data : err.message);
+                  return err;
+              });
+            return response;
+        } catch (e) {
+            console.log('Error: ', e);
+            return e;
+        }
+    }
+
+    // async get bill's information
+    async getBillInformation(billerCode: string) {
+        try {
+            const response = await axiosInstance.get(`/billers/${billerCode}/items`, {
+                params: {
+                    country: 'NG',
+                }
+            }).then((res) => res.data)
+              .catch((err) => {
+                  console.error('Error Response:', err.response ? err.response.data : err.message);
+                  return err;
+              });
+            return response;
+        } catch (e) {
+            console.log('Error: ', e);
+            return e;
+        }
+    }
+
+    // async validate bills
+    async validateBill(billerCode: string, customer: string, itemCode: string) {
+        try {
+            const response = await axiosInstance.get(`/bill-items/${itemCode}/validate`, {
+                params : {
+                    country: 'NG',
+                    customer,
+                    code: billerCode
+                }
+            }).then((res) => res.data)
+              .catch((err) => {
+                  console.error('Error Response:', err.response ? err.response.data : err.message);
+                  return err;
+              });
+            return response;
+        } catch (e) {
+            console.log('Error: ', e);
+            return e;
+        }
+    }
+    
 }
 
 export default new FlutterwaveService()
