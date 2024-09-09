@@ -30,6 +30,13 @@ interface BillsPaymentParams {
     customer: string
 }
 
+interface TransferParams {
+    bank_code: string
+    account_number: number
+    amount: number
+    narration: string
+}
+
 class FlutterwaveService {
 
     // create virtual account
@@ -199,6 +206,58 @@ class FlutterwaveService {
         }
     }
 
+    // async transfer money
+    async transferMoney(data: TransferParams) {
+        try {
+            const payload = {
+                account_bank: data.bank_code,
+                account_number: data.account_number,
+                amount: data.amount,
+                currency: 'NG',
+                narration: data.narration,
+                debit_subaccount: 'PSA'
+            }
+
+            const response = await axiosInstance.post(`/transfers`, payload).then((res) => res.data).catch((err) => {
+                console.error('Error Response:', err.response ? err.response.data : err.message);
+                return err;
+            })
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
+        } catch (e) {
+            console.log('Error: ', e)
+            return e;
+        }
+    }
+
+    // async Get Transfer Fee
+    async transferFee(amount: number) {
+        try {
+            const response = await axiosInstance.get('/transfers/fee', {
+                params: {
+                    amount: amount,
+                    currency: 'NG',
+                }
+            }).then((res) => res.data)
+                .catch((err) => {
+                    console.error('Error Response:', err.response ? err.response.data : err.message);
+                    return err;
+                })
+
+            if (response) {
+                return response
+            } else {
+                return false
+            }
+        } catch (e) {
+            console.log('Error: ', e)
+            return e
+        }
+    }
 }
 
 export default new FlutterwaveService()
