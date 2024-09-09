@@ -63,6 +63,29 @@ class BillsController {
             return
         }
     }
+
+    // Make Bill Payment
+    async makeBillPayment(req: any, res: any) {
+        try {
+            const { billerCode, customer, itemCode, amount } = req.body
+
+            const payload = {
+                biller_code: billerCode,
+                item_code: itemCode,
+                amount: amount,
+                customer: customer
+            }
+            
+            const billPayment = await FlutterwaveService.makeBillPayment(payload);
+            sendResponse(res, { success: true, message: 'Make bill payment successfully', data: billPayment, code: 200 }, 200);
+            logger.info('Make bill payment successfully');
+            return
+        } catch (e) {
+            sendError(res, 'Error', 400);
+            logger.error(`Make bill payment failed: `);
+            return
+        }
+    }
 }
 
 export default new BillsController()
